@@ -1,9 +1,9 @@
-import { useForm } from 'react-hook-form'
-import { Text } from 'react-native'
+import { AppInput } from "@/components/AppInput";
+import { useForm } from "react-hook-form";
 
 export interface FormLoginParams {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export const LoginForm = () => {
@@ -11,11 +11,26 @@ export const LoginForm = () => {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormLoginParams>()
+  } = useForm<FormLoginParams>();
 
   return (
     <>
-      <Text className="text-white">Login Form</Text>
+      <AppInput
+        control={control}
+        name="email"
+        label="E-MAIL"
+        leftIconName="email"
+        placeholder="mail@example.br"
+      />
+
+      <AppInput
+        control={control}
+        name="password"
+        label="SENHA"
+        leftIconName="lock-outline"
+        placeholder="Sua senha"
+        secureTextEntry
+      />
     </>
-  )
-}
+  );
+};
