@@ -1,10 +1,16 @@
 import { AppButton } from "@/components/AppButton";
 import { AppInput } from "@/components/AppInput";
+import { useAuthContext } from "@/context/auth.context";
 import { PublicStackParamsList } from "@/routes/PublicRoutes";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Text, View, ActivityIndicator } from "react-native";
+import { useErrorHandler } from "@/shared/hooks/useErrorHandler";
+import { schema } from "./schema";
+import { colors } from "@/shared/colors";
 
 export interface FormRegisterParams {
   name: string;
@@ -17,11 +23,30 @@ export const RegisterForm = () => {
   const navigation =
     useNavigation<StackNavigationProp<PublicStackParamsList>>();
 
+  const { handleRegister } = useAuthContext();
+  const { errorHandler } = useErrorHandler();
+
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormRegisterParams>();
+  } = useForm<FormRegisterParams>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (userData: FormRegisterParams) => {
+    try {
+      await handleRegister(userData);
+    } catch (error) {
+      errorHandler(error, "Falha ao cadastrar usuário");
+    }
+  };
 
   return (
     <>
@@ -60,7 +85,13 @@ export const RegisterForm = () => {
       />
 
       <View className="flex-1 justify-between mt-8 mb-8 min-h-[250px]">
-        <AppButton iconName="arrow-forward">Cadastrar</AppButton>
+        <AppButton iconName="arrow-forward" onPress={handleSubmit(onSubmit)}>
+          {isSubmitting ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            "Cadastrar"
+          )}
+        </AppButton>
 
         <View>
           <Text className="mb-6 text-gray-300 text-base">

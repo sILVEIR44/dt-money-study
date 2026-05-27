@@ -1,3 +1,4 @@
+import { ErrorMessage } from "@/components/ErrorMessage";
 import { colors } from "@/shared/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import clsx from "clsx";
@@ -29,6 +30,7 @@ export const AppInput = <T extends FieldValues>({
   const inputRef = useRef<TextInput>(null);
 
   const [isFocused, setIsFocused] = useState(false);
+
   const [showText, setShowText] = useState(secureTextEntry);
 
   const checkFocus = () => {
@@ -41,7 +43,7 @@ export const AppInput = <T extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, value } }) => {
+      render={({ field: { onChange, value }, fieldState: { error } }) => {
         return (
           <View className="w-full mt-4">
             {label && (
@@ -89,6 +91,8 @@ export const AppInput = <T extends FieldValues>({
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
+
+            {error && <ErrorMessage>{error.message}</ErrorMessage>}
           </View>
         );
       }}
